@@ -1,0 +1,18 @@
+.login-form{
+    margin-top: 150px;
+    background-color: #ececec;
+}
+
+.button.is-link{
+    background-color: #273C82 !important;
+}
+.panel.is-link .panel-heading{
+    background-color: #273C82 !important;
+}
+.navbar.is-link {
+    background-color: #273C82 !important;
+}
+
+.capitalize{
+    text-transform: capitalize;
+}

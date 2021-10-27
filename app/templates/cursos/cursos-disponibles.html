@@ -1,0 +1,37 @@
+{% extends "base_template.html" %}
+
+{% block content %} 
+<script>
+  $( function() {
+    $( ".my-atepicker" ).datepicker(
+      $.datepicker.regional[ "es" ]
+    );
+    $( ".my-atepicker" ).datepicker( "option", "dateFormat", "dd/mm/yy");
+  });
+</script>
+
+<div class="container">
+  <div class="columns">
+    <div class="column is-3">
+      {% include '/cursos/partials/menu-cursos-tpl.html' %}
+    </div>
+    <div class="column is-9">
+      <p class="subtitle"><strong>Cursos disponibles</strong></p>
+      <table class="class table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+        <tr><th>#</th><th>Curso</th><th>Descripción</th></tr>
+        {% for e in lista_cursos %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ e.nombre }}</td>
+            <td>{{ e.descripcion }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+ 

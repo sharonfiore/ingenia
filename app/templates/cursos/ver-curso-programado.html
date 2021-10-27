@@ -1,0 +1,291 @@
+{% extends "base_template.html" %}
+
+{% block content %}
+<div id="vm" class="container">
+  <div class="columns">
+    <div class="column is-3">
+      {% include '/cursos/partials/menu-cursos-tpl.html' %}
+    </div>
+    <div class="column is-9">
+      <p class="subtitle"><strong>Curso programado</strong></p><br />
+      <form action="{{url_for('cursos.ver_curso_programado', id=form.id.data)}}" method="post" class="form" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="field is-horizontal">
+          <div class="field-body">
+            <div class="field-label is-normal">
+              <label class="label"> {{ form.curso.label }}</label>
+            </div>
+            <div class="field">
+              <p class="control is-expanded has-icons-left">
+                {{ form.curso(class_="input  has-background-grey-lighter") }}
+              </p>
+            </div>
+            <div class="field-label is-normal">
+              <label class="label"> {{ form.fecha_ini.label }}</label>
+            </div>
+            <div class="field">
+              {{ form.fecha_ini(class_="my-datepicker input") }}
+            </div>
+            <div class="field">
+              {{ form.submit(class_="button is-link") }}
+            </div>
+          </div>
+        </div>
+        <div>
+          {% for error in form.curso.errors %}
+          <span class="has-text-danger">{{ error }}</span>
+          {% endfor %}
+          {% for error in form.fecha_ini.errors %}
+          <span class="has-text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="field">
+          {% with messages = get_flashed_messages() %}
+          {% if messages %}
+          <ul class=flashes>
+            {% for message in messages %}
+            <li><span class="has-text-link">{{ message }}</span></li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          {% endwith %}
+        </div>
+      </form>
+
+      <hr>
+
+      <nav class="level">
+        <!-- Left side -->
+        <div class="level-left">
+          <div class="level-item">
+            <p class="subtitle is-5">
+              <strong>Alumnos inscritos</strong>
+            </p>
+          </div>
+        </div>
+        <!-- Right side -->
+        <div class="level-right">
+          <p class="level-item"><a class="button is-success" v-on:click="launch">Agregar</a></p>
+        </div>
+      </nav>
+
+      <table class="class table is-bordered is-striped 
+      is-narrow is-hoverable is-fullwidth">
+        <tr>
+          <th>#</th>
+          <th>Dni</th>
+          <th>Nombres</th>
+          <th>Apellidos</th>
+          <th>Celular</th>
+          <th class="has-text-centered">Certificado</th>
+          <th class="has-text-centered">Acciones</th>
+        </tr>
+        {% for e in lista %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ e.alumno.dni }}</td>
+          <td>{{ e.alumno.nombre }}</td>
+          <td>{{ e.alumno.apellido }}</td>
+          <td>{{ e.alumno.celular }}</td>
+          <td class="has-text-centered">
+              {% if e.certificado %}
+              <a href="{{ url_for('cursos.download_file', filename=e.certificado) }}">
+                <span>
+                <i class="fas fa-file-pdf" title="Descargar"></i>
+                  Descargar certificado
+                </span>
+               </a> 
+              {% else %}
+               <a href="{{ url_for('cursos.curso_alumno_subir_certificado', cid=form.id.data, aid=e.alumno.id) }}"> 
+                <span>
+                <i class="fas fa-upload" title="Subir certificado"></i>
+                  Subir certificado
+                </span>
+               </a>
+              {% endif %}
+          </td>
+          <td class="has-text-centered">
+            <span class="icon" style="cursor: pointer" 
+            v-on:click="retirarAlumno({{ e.id }})"><i
+            class="fas fa-trash" title="Eliminar"></i> </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+
+      <div class="modal" v-bind:class="{'is-active':isActive}">
+        <div class="modal-background"></div>
+        <div class="modal-card" style="width: 840px">
+          <header class="modal-card-head">
+            <p class="modal-card-title">Agregar Alumnos</p>
+          </header>
+          <section class="modal-card-body" >
+            <nav class="level">
+              <!-- Left side -->
+              <div class="level-left">
+                <div class="level-item">
+                  <label class="label">Buscar : </label>
+                </div>
+                <div class="level-item">
+                  <div class="field has-addons">
+                    <p class="control">
+                      <input type="text" class="input"
+                        v-model="slug"
+                        placeholder="Buscar por slug, dni, nombre,apellido"/>
+                    </p>
+                    <p class="control">
+                      <input type="button" class="button is-link" v-on:click="buscarAlumnoXFiltro"  value="Buscar" />
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </nav>
+
+            <table class="class table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+              <tr>
+                <th>
+                  <input type="checkbox" v-model="isCheckAll" @change="checkAll($event)"></label>
+                </th><th>Dni</th><th>Nombres</th><th>Apellidos</th>
+                <th>Correo</th><th>Celular</th><th>Slug</th>
+              </tr>
+              <tr v-for="(item, index) in lista">
+                <td><label class="checkbox">
+                  <input type="checkbox" v-model="item.checked"></label>
+                </td>
+                <td>[[item.dni]]</td>
+                <td>[[item.nombre]]</td>
+                <td>[[item.apellido]]</td>
+                <td>[[item.correo]]</td>
+                <td>[[item.celular]]</td>
+                <td>[[item.slug]]</td>
+              </tr>
+            </table>
+          </section>
+          <footer class="modal-card-foot">
+            <button v-on:click="guardarAlumnosSeleccionados" 
+            class="button is-success">Agregar</button>
+          </footer>
+        </div>
+        <button class="modal-close is-large" aria-label="close" v-on:click="close"></button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const vm = new Vue({ // Again, vm is our Vue instance's name for consistency.
+    el: '#vm',
+    delimiters: ['[[', ']]'],
+    data: {
+        isActive: false,
+        lista: [],
+        isCheckAll: false,
+        slug: ""
+    },
+    methods: {
+      checkAll: function(e) {
+        this.$nextTick(() => {
+          for(i=0;i<this.lista.length; i++){
+            var item = this.lista[i];
+            if(this.isCheckAll){
+              item.checked = true;
+            }else{
+              item.checked = false;
+            }
+          }
+        })
+      },
+      buscarAlumnoXFiltro: function() {
+        var params = { op: 'filtro-mixto', slug: this.slug};
+        try {
+          axios.get('{{url_for("alumnos.lista_completa")}}', {params: params})
+          .then(
+            response => {
+              this.lista = [];
+              var data = response.data;
+              for(i=0;i<data.length; i++){
+                var item = data[i];
+                item.checked = false;
+                this.lista.push(item);
+              }
+            }
+          )
+          .catch(error => {
+            console.log(error)
+          })
+          //.finally(() => this.loading = false)
+        } catch (error) {
+          console.log(error);
+        }
+      }, 
+      subirCertificado: function(id){
+        var c = confirm("¿Está seguro que desea eliminar este registro?");
+        if(c){
+          var params = { id: id};
+          axios.delete('{{url_for("cursos.alumnos_registrados")}}', {params: params})
+          .then(
+            response => {
+              if(response.data.message == "ok"){
+                window.location.reload()
+              }
+            }
+          )
+          .catch(error => {
+            console.log(error)
+          })
+        }else{
+          console.log("no");
+        }
+      },
+      retirarAlumno: function(id){
+        var c = confirm("¿Está seguro que desea eliminar este registro?");
+        if(c){
+          var params = { id: id};
+          axios.delete('{{url_for("cursos.alumnos_registrados")}}', {params: params})
+          .then(
+            response => {
+              if(response.data.message == "ok"){
+                window.location.reload()
+              }
+            }
+          )
+          .catch(error => {
+            console.log(error)
+          })
+        }else{
+          console.log("no");
+        }
+      },
+      guardarAlumnosSeleccionados: function(){
+        let ids = []
+        for(i=0;i<this.lista.length; i++){
+          var item = this.lista[i];
+          if(item.checked){
+            ids.push(item.id);
+          }
+        }
+        // Inscribir alumnos en el curso.
+        var cid = '{{form.id.data}}';
+        var params = { op: 'inscribir-alumnos',cid: cid ,ids: ids};
+        axios.put('{{url_for("cursos.cursos_programados")}}', {params: params})
+          .then(
+            response => {
+              if(response.data.message == "ok"){
+                this.isActive = false;
+                window.location.reload()
+              }
+            }
+          )
+          .catch(error => {
+            console.log(error)
+          })
+      },
+      launch: function() {
+        this.isActive = true;
+      },
+      close: function() {
+        this.isActive = false;
+      }
+    }
+})
+</script>
+{% endblock %}

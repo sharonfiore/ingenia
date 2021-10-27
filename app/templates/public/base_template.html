@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link data-n-head="ssr" rel="icon" type="image/x-icon" href="{{ url_for("static", filename="favicon.ico") }}">
+    <title>{% block title %}Ingenia | Panel de Administración{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css" />
+    <link rel="stylesheet" href="{{ url_for("static", filename="base.css") }}">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="/static/datepicker-es.js"></script>
+    <script src="/static/base.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="/static/axios.min.js"></script> 
+</head>
+<body >
+    <section style="background-color: #273C82;margin-bottom: 20px;">
+        <div class="container">
+            <nav class="navbar is-link" role="navigation" aria-label="main navigation">
+                <div class="navbar-brand">
+                    <a class="navbar-item" href="https://ingeniacyc.com">
+                        <img src="{{url_for('static', filename='logo-ingenia.png')}}" style="height: 40px;" />
+                    </a>
+                    <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+                        data-target="navbarBasicExample">
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </section>
+    <section>
+        {% block content %}{% endblock %}
+    </section>
+</body>
+</html>

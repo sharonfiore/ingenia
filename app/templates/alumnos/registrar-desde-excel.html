@@ -1,0 +1,62 @@
+{% extends "base_template.html" %}
+
+{% block content %}
+<script>
+  $(function () {
+    $(".my-atepicker").datepicker(
+      $.datepicker.regional["es"]
+    );
+    $(".my-atepicker").datepicker("option", "dateFormat", "dd/mm/yy");
+  });
+</script>
+
+<div class="container">
+  <div class="columns">
+    <div class="column is-3">
+      {% include '/alumnos/partials/menu-alumnos-tpl.html' %}
+    </div>
+    <div class="column is-9">
+      <p class="subtitle"><strong>Registrar desde Excel</strong></p>
+      <form action="{{ url_for('alumnos.registrar_desde_excel') }}" method="post" class="form"
+        enctype="multipart/form-data" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="field">
+          <label class="label">Subir archivo</label>
+          <div class="control">
+            <input type="file" name="document" class="input">
+          </div>
+          {% for error in form.document.errors %}
+          <span class="has-text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <nav class="level">
+          <!-- Right side -->
+          <div class="level-right">
+            <p class="level-item">
+              {{ form.submit(class_="button is-link") }}
+            </p>
+          </div>
+        </nav>
+      </form>
+      <br><br>
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <ul class=flashes>
+        {% for message in messages %}
+        <li><span class="has-text-link">{{ message }}</span></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+      <br>
+      <section>
+        <strong>Formato de CSV</strong>
+        <p>
+          [DNI] [Nombres] [Apellidos] [Correo] [Celular] [Etiqueta] 
+        </p>
+      </section>
+    </div> 
+  </div>
+</div>
+
+{% endblock %}

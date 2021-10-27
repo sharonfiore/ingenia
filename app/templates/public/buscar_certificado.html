@@ -1,0 +1,82 @@
+{% extends "public/base_template.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="columns is-multiline">
+        <div class="column is-12">
+            <span class="subtitle"><strong>Búsqueda de certificados por dni</strong></span>
+        </div>
+        <div class="column is-12"> 
+            <nav class="level">
+                <!-- Left side -->
+                <div class="level-left">
+                    <div class="level-item">
+                        <form action="{{url_for('public.certificado_busqueda')}}" 
+                            method="get" class="form" novalidate>
+                            <div class="field is-horizontal">
+                                <div class="field-body">
+                                    <div class="field-label is-normal">
+                                        <label class="label">DNI</label>
+                                    </div>
+                                    <div class="field">
+                                        <input type="text" name="dni" value="{{alumno.dni}}" class="input"> 
+                                    </div>
+                                    <div class="field">
+                                        <input type="submit" value="Buscar certificado" class="button is-link"/> 
+                                    </div>
+                                </div>
+                            </div> 
+                            <div class="field">
+                                {% with messages = get_flashed_messages() %}
+                                {% if messages %}
+                                <ul class=flashes>
+                                    {% for message in messages %}
+                                    <li><span class="has-text-link">{{ message }}</span></li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                                {% endwith %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </nav>
+
+            {% if lista %}
+            <table class="class table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                <tr>
+                    <th>#</th>
+                    <th>Dni</th>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Curso</th>
+                    <th class="has-text-centered">Certificado</th>
+                </tr>
+                {% for e in lista %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ e.alumno.dni }}</td>
+                    <td>{{ e.alumno.nombre | title }}</td>
+                    <td>{{ e.alumno.apellido | title }}</td>
+                    <td>{{ e.curso_prog.curso.nombre }}</td>
+                    <td class="has-text-centered">
+                        {% if e.certificado %}
+                        <a href="{{ url_for('public.download_cert', filename=e.certificado) }}">
+                            <span>
+                                <i class="fas fa-file-pdf" title="Descargar"></i>
+                                Descargar certificado
+                            </span>
+                        </a>
+                        {% else %}
+                            <span>En curso</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% endif %}
+        </div>
+    </div>
+</div>
+ 
+{% endblock %}

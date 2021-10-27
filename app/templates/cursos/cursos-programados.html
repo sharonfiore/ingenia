@@ -1,0 +1,54 @@
+{% extends "base_template.html" %}
+
+{% block content %} 
+
+<div class="container">
+  <div class="columns">
+    <div class="column is-3">
+      {% include '/cursos/partials/menu-cursos-tpl.html' %}
+    </div>
+    <div class="column is-9">
+    <p class="subtitle"><strong>Cursos programados</strong></p>
+    <table class="class table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+      <tr>
+        <th>#</th>
+        <th>Curso</th>
+        <th>F. Inicio</th>
+        <th>F. Fin</th>
+        <th  class="has-text-centered">Acciones</th>
+      </tr>
+      {% for e in lista_cursos %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ e.curso.nombre }}</td>
+          <td>{{ e.fecha_inicio.strftime('%d-%m-%Y') }}</td>
+          <td>{{ e.fecha_fin.strftime('%d-%m-%Y') }}</td>
+          <td class="has-text-centered">
+            <a href="{{ url_for('cursos.ver_curso_programado', id=e.id) }}">
+              <span class="icon"><i class="fas fa-edit" title="Editar"></i> </span>
+            </a>
+            <span class="icon" style="cursor: pointer" onclick="eliminarCursoProgramado({{ e.id }})"><i class="fas fa-trash" title="Eliminar"></i> </span>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+    </div> 
+  </div>
+</div>
+
+<script>
+  function eliminarCursoProgramado(idx){
+    var r = confirm("¿Estás seguro que deseas eliminar este registro?");
+    if(r == true){
+        $.ajax({
+          url: '{{url_for("cursos.cursos_programados")}}',
+          type: 'DELETE',
+          data: JSON.stringify({ id: idx} ),
+          success: function(result) {
+            window.location.reload();
+          }
+      });
+    } 
+  }
+</script>
+{% endblock %}

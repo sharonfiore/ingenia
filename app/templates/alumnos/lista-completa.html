@@ -1,0 +1,69 @@
+{% extends "base_template.html" %}
+
+{% block content %} 
+<script>
+  $( function() {
+    $( ".my-atepicker" ).datepicker(
+      $.datepicker.regional[ "es" ]
+    );
+    $( ".my-atepicker" ).datepicker( "option", "dateFormat", "dd/mm/yy");
+  });
+</script>
+
+<div class="container">
+  <div class="columns">
+    <div class="column is-3">
+      {% include '/alumnos/partials/menu-alumnos-tpl.html' %}
+    </div>
+    <div class="column is-9"> 
+      <p class="subtitle"><strong>Lista completa de Alumnos</strong></p>
+      <table class="class table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+        <tr>
+          <th>#</th><th>DNI</th><th>Nombres</th>
+          <th>Apellidos</th><th>Correo</th><th>Celular</th><th>Slug</th>
+          <th>Acciones</th>
+        </tr>
+        {% for e in lista %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ e.dni }}</td>
+            <td>{{ e.nombre | title }}</td>
+            <td>{{ e.apellido | title}}</td>
+            <td>{{ e.correo }}</td>
+            <td>{{ e.celular }}</td>
+            <td>{{ e.slug }}</td>
+            <td class="has-text-centered">
+              <a href="{{ url_for('alumnos.ver_alumno', id=e.id) }}">
+                <span class="icon"><i class="fas fa-edit" title="Editar"></i> </span>
+              </a>
+              <span class="icon" style="cursor: pointer" onclick="eliminarAlumno({{ e.id }})"><i class="fas fa-trash" title="Eliminar"></i> </span>
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+  function eliminarAlumno(idx){
+    var r = confirm("¿Estás seguro que deseas eliminar este registro?");
+    if(r == true){
+        $.ajax({
+          url: '/alumnos/ver-alumno/'+idx,
+          type: 'DELETE',
+          data: JSON.stringify({ id: idx} ),
+          success: function(result) {
+            console.log(result);
+            if (result == "error"){
+              alert("No se pudo borrar, el registro está vinculado a un curso programado")
+            }
+            window.location.reload();
+          }
+      });
+    } 
+  }
+</script>
+{% endblock %}
+
+
+ 

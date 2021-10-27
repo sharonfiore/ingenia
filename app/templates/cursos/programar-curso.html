@@ -1,0 +1,76 @@
+{% extends "base_template.html" %}
+
+{% block content %} 
+<script>
+  $( function() {
+    $( ".my-datepicker" ).datepicker(
+      $.datepicker.regional[ "es" ]
+    );
+    $( ".my-datepicker" ).datepicker( "option", "dateFormat", "dd/mm/yy");
+  });
+</script>
+
+<div class="container">
+  <div class="columns">
+    <div class="column is-3">
+      {% include '/cursos/partials/menu-cursos-tpl.html' %}
+    </div>
+    <div class="column is-9">
+      <p class="subtitle"><strong>Programar curso</strong></p>
+      <form action="{{ url_for('cursos.programar_curso') }}" method="post" class="form" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="field">
+          <label class="label"> {{ form.curso.label }}</label>
+          <div class="control">
+            {{ form.curso(class_="input") }}
+          </div>
+          {% for error in form.curso.errors %}
+          <span class="has-text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="field">
+          <label class="label"> {{ form.fecha_ini.label }}</label>
+          <div class="control">
+            {{ form.fecha_ini(class_="my-datepicker input") }}
+          </div>
+          {% for error in form.fecha_ini.errors %}
+          <span class="has-text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="field">
+          <label class="label"> {{ form.fecha_fin.label }}</label>
+          <div class="control">
+            {{ form.fecha_fin(class_="my-datepicker input") }}
+          </div>
+          {% for error in form.fecha_fin.errors %}
+          <span class="has-text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div>
+          <span class="has-text-danger">{{ error }}</span>
+        </div>
+        <div class="field">
+          {% with messages = get_flashed_messages() %}
+            {% if messages %}
+              <ul class=flashes>
+              {% for message in messages %}
+                <li><span class="has-text-link">{{ message }}</span></li>
+              {% endfor %}
+              </ul>
+            {% endif %}
+          {% endwith %}
+        </div>
+        <nav class="level">
+          <!-- Right side -->
+          <div class="level-right">
+            <p class="level-item">
+              {{ form.submit(class_="button is-link") }}
+            </p>
+          </div>
+        </nav>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
